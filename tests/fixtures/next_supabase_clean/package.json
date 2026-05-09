@@ -1,0 +1,1 @@
+{"dependencies":{"@supabase/supabase-js":"latest","stripe":"latest","next":"latest"},"scripts":{"test":"node --test"}}

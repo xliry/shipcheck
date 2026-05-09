@@ -1,0 +1,8 @@
+__pycache__/
+.pytest_cache/
+*.pyc
+*.egg-info/
+shipcheck-report.md
+report.md
+clean-report.md
+runs/

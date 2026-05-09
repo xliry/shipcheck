@@ -1,0 +1,14 @@
+{
+  "name": "shipcheck",
+  "version": 1,
+  "status": "READY",
+  "target_agent": "Codex",
+  "created": "2026-05-09",
+  "updated": "2026-05-09",
+  "estimated_hours": 10,
+  "loc_budget": 1200,
+  "form_factor": "CLI",
+  "scope": "Next.js/Supabase/Stripe SaaS production-readiness audit",
+  "distribution": "Open source Python package, future GitHub Action",
+  "build_runs": []
+}

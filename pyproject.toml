@@ -1,0 +1,25 @@
+[project]
+name = "shipcheck"
+version = "0.1.0"
+description = "Production-readiness audit for AI-built SaaS projects"
+requires-python = ">=3.10"
+dependencies = [
+  "click>=8.1",
+  "rich>=13.0",
+  "gitpython>=3.1",
+  "pyyaml>=6.0",
+  "tomli>=2.0; python_version<'3.11'"
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
+[project.scripts]
+shipcheck = "shipcheck.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["shipcheck*"]
