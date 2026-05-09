@@ -1,5 +1,5 @@
 [project]
-name = "shipcheck"
+name = "shipcheck-ai"
 version = "0.1.0"
 description = "Production-readiness audit for AI-built SaaS projects"
 requires-python = ">=3.10"

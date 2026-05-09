@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "status": "to_be_run",
+  "description": "Public Next.js/Supabase/Stripe-oriented repositories for evaluating ShipCheck signal quality. Scores are intentionally omitted until the benchmark is run.",
+  "targets": [
+    {
+      "name": "launch-mvp-stripe-nextjs-supabase",
+      "repo": "https://github.com/ShenSeanChen/launch-mvp-stripe-nextjs-supabase",
+      "stack_notes": "Next.js, Stripe, Supabase MVP boilerplate",
+      "score_status": "to_be_run"
+    },
+    {
+      "name": "next-supabase-stripe-starter",
+      "repo": "https://github.com/KolbySisk/next-supabase-stripe-starter",
+      "stack_notes": "Next.js, Supabase, Stripe SaaS starter",
+      "score_status": "to_be_run"
+    },
+    {
+      "name": "build-a-saas-with-next-js-supabase-and-stripe",
+      "repo": "https://github.com/dijonmusters/build-a-saas-with-next-js-supabase-and-stripe",
+      "stack_notes": "Next.js, Supabase, Stripe tutorial app",
+      "score_status": "to_be_run"
+    },
+    {
+      "name": "Next-Supabase-Stripe-Starter",
+      "repo": "https://github.com/saumya66/Next-Supabase-Stripe-Starter",
+      "stack_notes": "Next.js, TypeScript, Supabase, Stripe starter",
+      "score_status": "to_be_run"
+    },
+    {
+      "name": "next-stripe-supabase-tailwind-typescript",
+      "repo": "https://github.com/mustafacagri/next-stripe-supabase-tailwind-typescript",
+      "stack_notes": "Next.js SaaS starter with Supabase and Stripe",
+      "score_status": "to_be_run"
+    },
+    {
+      "name": "Next-Supabase-Stripe",
+      "repo": "https://github.com/Jacob-A11/Next-Supabase-Stripe",
+      "stack_notes": "Next.js, Supabase auth, Stripe subscriptions",
+      "score_status": "to_be_run"
+    },
+    {
+      "name": "supabase-stripe-nextjs-template",
+      "repo": "https://github.com/jesse-lane-ai/supabase-stripe-nextjs-template",
+      "stack_notes": "Supabase, Stripe, Next.js template",
+      "score_status": "to_be_run"
+    },
+    {
+      "name": "nextjs-supabase-stripe-starter",
+      "repo": "https://github.com/SydilSohan/nextjs-supabase-stripe-starter",
+      "stack_notes": "Next.js, Supabase, Stripe starter",
+      "score_status": "to_be_run"
+    }
+  ]
+}
