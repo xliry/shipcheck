@@ -1,0 +1,136 @@
+﻿{
+  "target": "https://github.com/KolbySisk/next-supabase-stripe-starter",
+  "profile": "next-supabase-stripe",
+  "files_scanned": 67,
+  "score": 38,
+  "verdict": "needs_work",
+  "summary": "Address the listed production-readiness gaps before launch.",
+  "categories": {
+    "secrets": {
+      "score": 4,
+      "max_score": 25
+    },
+    "auth": {
+      "score": 0,
+      "max_score": 20
+    },
+    "database": {
+      "score": 16,
+      "max_score": 20
+    },
+    "payments": {
+      "score": 5,
+      "max_score": 15
+    },
+    "reliability": {
+      "score": 9,
+      "max_score": 10
+    },
+    "trust": {
+      "score": 4,
+      "max_score": 10
+    }
+  },
+  "findings": [
+    {
+      "id": "database.wide_open_policy",
+      "category": "database",
+      "severity": "high",
+      "title": "Wide-open RLS policy found",
+      "file": "supabase/migrations/20240115041359_init.sql",
+      "line": 66,
+      "evidence": "create policy Allow public read-only access. on products for select using (true);",
+      "why_it_matters": "Policies using true can expose all rows unless tightly limited elsewhere.",
+      "remediation": "Scope policies to authenticated users, ownership, or admin roles."
+    },
+    {
+      "id": "database.wide_open_policy",
+      "category": "database",
+      "severity": "high",
+      "title": "Wide-open RLS policy found",
+      "file": "supabase/migrations/20240115041359_init.sql",
+      "line": 99,
+      "evidence": "create policy Allow public read-only access. on prices for select using (true);",
+      "why_it_matters": "Policies using true can expose all rows unless tightly limited elsewhere.",
+      "remediation": "Scope policies to authenticated users, ownership, or admin roles."
+    },
+    {
+      "id": "payments.no_idempotency",
+      "category": "payments",
+      "severity": "medium",
+      "title": "Stripe event handling lacks idempotency evidence",
+      "file": "src/app/api/webhooks/route.ts",
+      "line": 1,
+      "evidence": "event handler without idempotency keyword",
+      "why_it_matters": "Stripe may retry events, causing duplicate grants or updates.",
+      "remediation": "Store processed event IDs or use idempotent writes."
+    },
+    {
+      "id": "reliability.no_ci",
+      "category": "reliability",
+      "severity": "medium",
+      "title": "No CI workflow found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Critical flows need automated checks before launch.",
+      "remediation": "Add a GitHub Actions workflow for tests and linting."
+    },
+    {
+      "id": "reliability.no_tests",
+      "category": "reliability",
+      "severity": "medium",
+      "title": "No tests found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Payment and auth regressions are easy to ship without tests.",
+      "remediation": "Add focused tests for auth, payments, and core flows."
+    },
+    {
+      "id": "secrets.missing_env_example",
+      "category": "secrets",
+      "severity": "medium",
+      "title": "No .env.example file found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Teams need a safe env contract without secret values.",
+      "remediation": "Add .env.example with placeholder values."
+    },
+    {
+      "id": "trust.missing_legal",
+      "category": "trust",
+      "severity": "medium",
+      "title": "Privacy policy or terms page is missing",
+      "file": null,
+      "line": null,
+      "evidence": "privacy/terms",
+      "why_it_matters": "Apps collecting user or payment data need clear trust and legal surfaces.",
+      "remediation": "Add privacy and terms pages linked from the app."
+    },
+    {
+      "id": "payments.hardcoded_price",
+      "category": "payments",
+      "severity": "low",
+      "title": "Stripe price ID is hard-coded",
+      "file": "src/features/account/controllers/upsert-user-subscription.ts",
+      "line": 1,
+      "evidence": "price_...",
+      "why_it_matters": "Hard-coded price IDs make environment separation fragile.",
+      "remediation": "Read price IDs from environment config."
+    },
+    {
+      "id": "reliability.no_error_boundary",
+      "category": "reliability",
+      "severity": "low",
+      "title": "No Next.js error boundary evidence found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "User-facing failures should render controlled recovery UI.",
+      "remediation": "Add app/error.tsx or an ErrorBoundary component."
+    }
+  ]
+}
+

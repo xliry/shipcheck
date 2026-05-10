@@ -1,0 +1,312 @@
+﻿{
+  "target": "https://github.com/ShenSeanChen/launch-mvp-stripe-nextjs-supabase",
+  "profile": "next-supabase-stripe",
+  "files_scanned": 80,
+  "score": 64,
+  "verdict": "high_risk",
+  "summary": "Launch is risky until the high-severity findings are fixed.",
+  "categories": {
+    "secrets": {
+      "score": 0,
+      "max_score": 25
+    },
+    "auth": {
+      "score": 20,
+      "max_score": 20
+    },
+    "database": {
+      "score": 20,
+      "max_score": 20
+    },
+    "payments": {
+      "score": 4,
+      "max_score": 15
+    },
+    "reliability": {
+      "score": 10,
+      "max_score": 10
+    },
+    "trust": {
+      "score": 10,
+      "max_score": 10
+    }
+  },
+  "findings": [
+    {
+      "id": "auth.api_mutation_no_guard",
+      "category": "auth",
+      "severity": "high",
+      "title": "API mutation route has no auth guard evidence",
+      "file": "app/api/email/send/route.ts",
+      "line": 1,
+      "evidence": "mutation route without auth keyword",
+      "why_it_matters": "Unauthenticated mutation endpoints can expose user data or admin actions.",
+      "remediation": "Verify users server-side before mutating data."
+    },
+    {
+      "id": "auth.api_mutation_no_guard",
+      "category": "auth",
+      "severity": "high",
+      "title": "API mutation route has no auth guard evidence",
+      "file": "app/api/stripe/sync/route.ts",
+      "line": 1,
+      "evidence": "mutation route without auth keyword",
+      "why_it_matters": "Unauthenticated mutation endpoints can expose user data or admin actions.",
+      "remediation": "Verify users server-side before mutating data."
+    },
+    {
+      "id": "auth.client_only_protection",
+      "category": "auth",
+      "severity": "high",
+      "title": "Route protection appears client-side only",
+      "file": "utils/posthog.ts",
+      "line": 1,
+      "evidence": "client redirect/localStorage auth marker",
+      "why_it_matters": "Client-only checks can be bypassed by direct requests.",
+      "remediation": "Move authorization checks to middleware or server handlers."
+    },
+    {
+      "id": "database.wide_open_policy",
+      "category": "database",
+      "severity": "high",
+      "title": "Wide-open RLS policy found",
+      "file": "initial_supabase_table_schema.sql",
+      "line": 65,
+      "evidence": "FOR ALL TO service_role USING (true);",
+      "why_it_matters": "Policies using true can expose all rows unless tightly limited elsewhere.",
+      "remediation": "Scope policies to authenticated users, ownership, or admin roles."
+    },
+    {
+      "id": "database.wide_open_policy",
+      "category": "database",
+      "severity": "high",
+      "title": "Wide-open RLS policy found",
+      "file": "initial_supabase_table_schema.sql",
+      "line": 78,
+      "evidence": "FOR ALL TO service_role USING (true);",
+      "why_it_matters": "Policies using true can expose all rows unless tightly limited elsewhere.",
+      "remediation": "Scope policies to authenticated users, ownership, or admin roles."
+    },
+    {
+      "id": "database.wide_open_policy",
+      "category": "database",
+      "severity": "high",
+      "title": "Wide-open RLS policy found",
+      "file": "initial_supabase_table_schema.sql",
+      "line": 91,
+      "evidence": "FOR ALL TO service_role USING (true);",
+      "why_it_matters": "Policies using true can expose all rows unless tightly limited elsewhere.",
+      "remediation": "Scope policies to authenticated users, ownership, or admin roles."
+    },
+    {
+      "id": "database.wide_open_policy",
+      "category": "database",
+      "severity": "high",
+      "title": "Wide-open RLS policy found",
+      "file": "initial_supabase_table_schema.sql",
+      "line": 104,
+      "evidence": "FOR ALL TO service_role USING (true);",
+      "why_it_matters": "Policies using true can expose all rows unless tightly limited elsewhere.",
+      "remediation": "Scope policies to authenticated users, ownership, or admin roles."
+    },
+    {
+      "id": "database.wide_open_policy",
+      "category": "database",
+      "severity": "high",
+      "title": "Wide-open RLS policy found",
+      "file": "supabase/scripts/setup/02-create-user-email-log-table.sql",
+      "line": 39,
+      "evidence": "USING (true)",
+      "why_it_matters": "Policies using true can expose all rows unless tightly limited elsewhere.",
+      "remediation": "Scope policies to authenticated users, ownership, or admin roles."
+    },
+    {
+      "id": "database.wide_open_policy",
+      "category": "database",
+      "severity": "high",
+      "title": "Wide-open RLS policy found",
+      "file": "supabase/scripts/setup/02-create-user-email-log-table.sql",
+      "line": 40,
+      "evidence": "WITH CHECK (true);",
+      "why_it_matters": "Policies using true can expose all rows unless tightly limited elsewhere.",
+      "remediation": "Scope policies to authenticated users, ownership, or admin roles."
+    },
+    {
+      "id": "reliability.no_rate_limit",
+      "category": "reliability",
+      "severity": "high",
+      "title": "Public mutation endpoint has no rate-limit evidence",
+      "file": "app/api/email/send/route.ts",
+      "line": 1,
+      "evidence": "mutation route without rate limit keyword",
+      "why_it_matters": "Public mutation endpoints can be abused.",
+      "remediation": "Add rate limiting around public mutation routes."
+    },
+    {
+      "id": "reliability.no_rate_limit",
+      "category": "reliability",
+      "severity": "high",
+      "title": "Public mutation endpoint has no rate-limit evidence",
+      "file": "app/api/stripe/cancel/route.ts",
+      "line": 1,
+      "evidence": "mutation route without rate limit keyword",
+      "why_it_matters": "Public mutation endpoints can be abused.",
+      "remediation": "Add rate limiting around public mutation routes."
+    },
+    {
+      "id": "reliability.no_rate_limit",
+      "category": "reliability",
+      "severity": "high",
+      "title": "Public mutation endpoint has no rate-limit evidence",
+      "file": "app/api/stripe/reactivate/route.ts",
+      "line": 1,
+      "evidence": "mutation route without rate limit keyword",
+      "why_it_matters": "Public mutation endpoints can be abused.",
+      "remediation": "Add rate limiting around public mutation routes."
+    },
+    {
+      "id": "reliability.no_rate_limit",
+      "category": "reliability",
+      "severity": "high",
+      "title": "Public mutation endpoint has no rate-limit evidence",
+      "file": "app/api/stripe/sync/route.ts",
+      "line": 1,
+      "evidence": "mutation route without rate limit keyword",
+      "why_it_matters": "Public mutation endpoints can be abused.",
+      "remediation": "Add rate limiting around public mutation routes."
+    },
+    {
+      "id": "reliability.no_rate_limit",
+      "category": "reliability",
+      "severity": "high",
+      "title": "Public mutation endpoint has no rate-limit evidence",
+      "file": "app/api/user/delete/route.ts",
+      "line": 1,
+      "evidence": "mutation route without rate limit keyword",
+      "why_it_matters": "Public mutation endpoints can be abused.",
+      "remediation": "Add rate limiting around public mutation routes."
+    },
+    {
+      "id": "auth.no_middleware",
+      "category": "auth",
+      "severity": "medium",
+      "title": "No protected route middleware found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Next.js apps commonly need server-side route protection beyond client state.",
+      "remediation": "Add middleware or an equivalent server-side protected route pattern."
+    },
+    {
+      "id": "database.no_migrations",
+      "category": "database",
+      "severity": "medium",
+      "title": "No Supabase/Postgres migrations directory found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Production schema changes need reviewable migration history.",
+      "remediation": "Add migrations under supabase/migrations or an equivalent tracked migration folder."
+    },
+    {
+      "id": "payments.no_idempotency",
+      "category": "payments",
+      "severity": "medium",
+      "title": "Stripe event handling lacks idempotency evidence",
+      "file": "app/api/stripe/webhook/route.ts",
+      "line": 1,
+      "evidence": "event handler without idempotency keyword",
+      "why_it_matters": "Stripe may retry events, causing duplicate grants or updates.",
+      "remediation": "Store processed event IDs or use idempotent writes."
+    },
+    {
+      "id": "reliability.no_ci",
+      "category": "reliability",
+      "severity": "medium",
+      "title": "No CI workflow found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Critical flows need automated checks before launch.",
+      "remediation": "Add a GitHub Actions workflow for tests and linting."
+    },
+    {
+      "id": "trust.missing_legal",
+      "category": "trust",
+      "severity": "medium",
+      "title": "Privacy policy or terms page is missing",
+      "file": null,
+      "line": null,
+      "evidence": "privacy/terms",
+      "why_it_matters": "Apps collecting user or payment data need clear trust and legal surfaces.",
+      "remediation": "Add privacy and terms pages linked from the app."
+    },
+    {
+      "id": "trust.generic_ai_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Generic AI launch copy found",
+      "file": "README.md",
+      "line": 1,
+      "evidence": "generic AI copy marker",
+      "why_it_matters": "Generic launch copy makes the app feel unfinished.",
+      "remediation": "Use concrete customer outcomes and specific product language."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "app/dashboard/page.tsx",
+      "line": 276,
+      "evidence": "Chart Placeholder",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "app/update-password/page.tsx",
+      "line": 105,
+      "evidence": "className=appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 text-gray-900 dark:text-gr",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "app/verify-email/page.tsx",
+      "line": 34,
+      "evidence": "// TODO: Implement resend verification email logic",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "components/DemoWidget.tsx",
+      "line": 14,
+      "evidence": "placeholder=Paste user feedback here...",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "components/LoginForm.tsx",
+      "line": 81,
+      "evidence": "placeholder=Email address",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    }
+  ]
+}
+

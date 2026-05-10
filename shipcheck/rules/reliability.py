@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 
 from shipcheck.models import AuditContext, Finding
-from .common import code_files, finding, line_has
+from .common import code_files, finding, is_api_route, is_stripe_webhook_route, line_has
 
 
 def check(ctx: AuditContext) -> list[Finding]:
@@ -27,7 +27,6 @@ def check(ctx: AuditContext) -> list[Finding]:
         for idx, line in enumerate(f.text.splitlines(), 1):
             if re.search(r"catch\s*\([^)]*\)\s*\{\s*\}|\bcatch\s*\{\s*\}", line):
                 out.append(finding("reliability.empty_catch", "reliability", "medium", "Empty catch block found", f, idx, line, "Swallowed errors hide production failures.", "Log, rethrow, or return a controlled error response."))
-        is_webhook = "webhook" in f.rel_path.lower()
-        if ("/api/" in f.rel_path or "app/api/" in f.rel_path) and not is_webhook and line_has(f.text, "POST", "PUT", "PATCH", "DELETE") and not line_has(f.text, "rateLimit", "ratelimit", "upstash"):
+        if is_api_route(f.rel_path) and not is_stripe_webhook_route(f) and line_has(f.text, "POST", "PUT", "PATCH", "DELETE") and not line_has(f.text, "rateLimit", "ratelimit", "upstash"):
             out.append(finding("reliability.no_rate_limit", "reliability", "high", "Public mutation endpoint has no rate-limit evidence", f, 1, "mutation route without rate limit keyword", "Public mutation endpoints can be abused.", "Add rate limiting around public mutation routes."))
     return out

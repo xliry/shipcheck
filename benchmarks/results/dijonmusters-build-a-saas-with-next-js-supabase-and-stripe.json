@@ -1,0 +1,686 @@
+﻿{
+  "target": "https://github.com/dijonmusters/build-a-saas-with-next-js-supabase-and-stripe",
+  "profile": "next-supabase-stripe",
+  "files_scanned": 384,
+  "score": 55,
+  "verdict": "high_risk",
+  "summary": "Launch is risky until the high-severity findings are fixed.",
+  "categories": {
+    "secrets": {
+      "score": 4,
+      "max_score": 25
+    },
+    "auth": {
+      "score": 4,
+      "max_score": 20
+    },
+    "database": {
+      "score": 12,
+      "max_score": 20
+    },
+    "payments": {
+      "score": 15,
+      "max_score": 15
+    },
+    "reliability": {
+      "score": 10,
+      "max_score": 10
+    },
+    "trust": {
+      "score": 10,
+      "max_score": 10
+    }
+  },
+  "findings": [
+    {
+      "id": "database.no_rls_evidence",
+      "category": "database",
+      "severity": "high",
+      "title": "No row-level security enable statements found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Supabase apps rely on RLS to protect browser-accessible data.",
+      "remediation": "Enable RLS on sensitive tables and add scoped policies."
+    },
+    {
+      "id": "payments.no_checkout_completed",
+      "category": "payments",
+      "severity": "high",
+      "title": "Stripe checkout exists without checkout.session.completed handling",
+      "file": null,
+      "line": null,
+      "evidence": "checkout.sessions.create",
+      "why_it_matters": "Entitlements should be confirmed by webhook events.",
+      "remediation": "Handle checkout.session.completed in a verified webhook route."
+    },
+    {
+      "id": "payments.webhook_no_signature",
+      "category": "payments",
+      "severity": "high",
+      "title": "Stripe webhook does not verify signatures",
+      "file": "21-subscribe-to-stripe-webhooks-using-next-js-api-routes/components/nav.js",
+      "line": 1,
+      "evidence": "webhook route without constructEvent",
+      "why_it_matters": "Unsigned webhooks can be forged to grant access.",
+      "remediation": "Use stripe.webhooks.constructEvent with STRIPE_WEBHOOK_SECRET."
+    },
+    {
+      "id": "payments.webhook_no_signature",
+      "category": "payments",
+      "severity": "high",
+      "title": "Stripe webhook does not verify signatures",
+      "file": "21-subscribe-to-stripe-webhooks-using-next-js-api-routes/context/user.js",
+      "line": 1,
+      "evidence": "webhook route without constructEvent",
+      "why_it_matters": "Unsigned webhooks can be forged to grant access.",
+      "remediation": "Use stripe.webhooks.constructEvent with STRIPE_WEBHOOK_SECRET."
+    },
+    {
+      "id": "payments.webhook_no_signature",
+      "category": "payments",
+      "severity": "high",
+      "title": "Stripe webhook does not verify signatures",
+      "file": "21-subscribe-to-stripe-webhooks-using-next-js-api-routes/pages/[id].js",
+      "line": 1,
+      "evidence": "webhook route without constructEvent",
+      "why_it_matters": "Unsigned webhooks can be forged to grant access.",
+      "remediation": "Use stripe.webhooks.constructEvent with STRIPE_WEBHOOK_SECRET."
+    },
+    {
+      "id": "payments.webhook_no_signature",
+      "category": "payments",
+      "severity": "high",
+      "title": "Stripe webhook does not verify signatures",
+      "file": "21-subscribe-to-stripe-webhooks-using-next-js-api-routes/pages/_app.js",
+      "line": 1,
+      "evidence": "webhook route without constructEvent",
+      "why_it_matters": "Unsigned webhooks can be forged to grant access.",
+      "remediation": "Use stripe.webhooks.constructEvent with STRIPE_WEBHOOK_SECRET."
+    },
+    {
+      "id": "payments.webhook_no_signature",
+      "category": "payments",
+      "severity": "high",
+      "title": "Stripe webhook does not verify signatures",
+      "file": "21-subscribe-to-stripe-webhooks-using-next-js-api-routes/pages/api/create-stripe-customer.js",
+      "line": 1,
+      "evidence": "webhook route without constructEvent",
+      "why_it_matters": "Unsigned webhooks can be forged to grant access.",
+      "remediation": "Use stripe.webhooks.constructEvent with STRIPE_WEBHOOK_SECRET."
+    },
+    {
+      "id": "payments.webhook_no_signature",
+      "category": "payments",
+      "severity": "high",
+      "title": "Stripe webhook does not verify signatures",
+      "file": "21-subscribe-to-stripe-webhooks-using-next-js-api-routes/pages/api/hello.js",
+      "line": 1,
+      "evidence": "webhook route without constructEvent",
+      "why_it_matters": "Unsigned webhooks can be forged to grant access.",
+      "remediation": "Use stripe.webhooks.constructEvent with STRIPE_WEBHOOK_SECRET."
+    },
+    {
+      "id": "payments.webhook_no_signature",
+      "category": "payments",
+      "severity": "high",
+      "title": "Stripe webhook does not verify signatures",
+      "file": "21-subscribe-to-stripe-webhooks-using-next-js-api-routes/pages/api/set-supabase-cookie.js",
+      "line": 1,
+      "evidence": "webhook route without constructEvent",
+      "why_it_matters": "Unsigned webhooks can be forged to grant access.",
+      "remediation": "Use stripe.webhooks.constructEvent with STRIPE_WEBHOOK_SECRET."
+    },
+    {
+      "id": "payments.webhook_no_signature",
+      "category": "payments",
+      "severity": "high",
+      "title": "Stripe webhook does not verify signatures",
+      "file": "21-subscribe-to-stripe-webhooks-using-next-js-api-routes/pages/api/subscription/[priceId].js",
+      "line": 1,
+      "evidence": "webhook route without constructEvent",
+      "why_it_matters": "Unsigned webhooks can be forged to grant access.",
+      "remediation": "Use stripe.webhooks.constructEvent with STRIPE_WEBHOOK_SECRET."
+    },
+    {
+      "id": "payments.webhook_no_signature",
+      "category": "payments",
+      "severity": "high",
+      "title": "Stripe webhook does not verify signatures",
+      "file": "21-subscribe-to-stripe-webhooks-using-next-js-api-routes/pages/index.js",
+      "line": 1,
+      "evidence": "webhook route without constructEvent",
+      "why_it_matters": "Unsigned webhooks can be forged to grant access.",
+      "remediation": "Use stripe.webhooks.constructEvent with STRIPE_WEBHOOK_SECRET."
+    },
+    {
+      "id": "payments.webhook_no_signature",
+      "category": "payments",
+      "severity": "high",
+      "title": "Stripe webhook does not verify signatures",
+      "file": "21-subscribe-to-stripe-webhooks-using-next-js-api-routes/pages/login.js",
+      "line": 1,
+      "evidence": "webhook route without constructEvent",
+      "why_it_matters": "Unsigned webhooks can be forged to grant access.",
+      "remediation": "Use stripe.webhooks.constructEvent with STRIPE_WEBHOOK_SECRET."
+    },
+    {
+      "id": "payments.webhook_no_signature",
+      "category": "payments",
+      "severity": "high",
+      "title": "Stripe webhook does not verify signatures",
+      "file": "21-subscribe-to-stripe-webhooks-using-next-js-api-routes/pages/logout.js",
+      "line": 1,
+      "evidence": "webhook route without constructEvent",
+      "why_it_matters": "Unsigned webhooks can be forged to grant access.",
+      "remediation": "Use stripe.webhooks.constructEvent with STRIPE_WEBHOOK_SECRET."
+    },
+    {
+      "id": "payments.webhook_no_signature",
+      "category": "payments",
+      "severity": "high",
+      "title": "Stripe webhook does not verify signatures",
+      "file": "21-subscribe-to-stripe-webhooks-using-next-js-api-routes/pages/payment/cancelled.js",
+      "line": 1,
+      "evidence": "webhook route without constructEvent",
+      "why_it_matters": "Unsigned webhooks can be forged to grant access.",
+      "remediation": "Use stripe.webhooks.constructEvent with STRIPE_WEBHOOK_SECRET."
+    },
+    {
+      "id": "payments.webhook_no_signature",
+      "category": "payments",
+      "severity": "high",
+      "title": "Stripe webhook does not verify signatures",
+      "file": "21-subscribe-to-stripe-webhooks-using-next-js-api-routes/pages/payment/success.js",
+      "line": 1,
+      "evidence": "webhook route without constructEvent",
+      "why_it_matters": "Unsigned webhooks can be forged to grant access.",
+      "remediation": "Use stripe.webhooks.constructEvent with STRIPE_WEBHOOK_SECRET."
+    },
+    {
+      "id": "payments.webhook_no_signature",
+      "category": "payments",
+      "severity": "high",
+      "title": "Stripe webhook does not verify signatures",
+      "file": "21-subscribe-to-stripe-webhooks-using-next-js-api-routes/pages/pricing.js",
+      "line": 1,
+      "evidence": "webhook route without constructEvent",
+      "why_it_matters": "Unsigned webhooks can be forged to grant access.",
+      "remediation": "Use stripe.webhooks.constructEvent with STRIPE_WEBHOOK_SECRET."
+    },
+    {
+      "id": "payments.webhook_no_signature",
+      "category": "payments",
+      "severity": "high",
+      "title": "Stripe webhook does not verify signatures",
+      "file": "21-subscribe-to-stripe-webhooks-using-next-js-api-routes/postcss.config.js",
+      "line": 1,
+      "evidence": "webhook route without constructEvent",
+      "why_it_matters": "Unsigned webhooks can be forged to grant access.",
+      "remediation": "Use stripe.webhooks.constructEvent with STRIPE_WEBHOOK_SECRET."
+    },
+    {
+      "id": "payments.webhook_no_signature",
+      "category": "payments",
+      "severity": "high",
+      "title": "Stripe webhook does not verify signatures",
+      "file": "21-subscribe-to-stripe-webhooks-using-next-js-api-routes/tailwind.config.js",
+      "line": 1,
+      "evidence": "webhook route without constructEvent",
+      "why_it_matters": "Unsigned webhooks can be forged to grant access.",
+      "remediation": "Use stripe.webhooks.constructEvent with STRIPE_WEBHOOK_SECRET."
+    },
+    {
+      "id": "payments.webhook_no_signature",
+      "category": "payments",
+      "severity": "high",
+      "title": "Stripe webhook does not verify signatures",
+      "file": "21-subscribe-to-stripe-webhooks-using-next-js-api-routes/utils/supabase.js",
+      "line": 1,
+      "evidence": "webhook route without constructEvent",
+      "why_it_matters": "Unsigned webhooks can be forged to grant access.",
+      "remediation": "Use stripe.webhooks.constructEvent with STRIPE_WEBHOOK_SECRET."
+    },
+    {
+      "id": "reliability.no_rate_limit",
+      "category": "reliability",
+      "severity": "high",
+      "title": "Public mutation endpoint has no rate-limit evidence",
+      "file": "24-allow-customer-to-manage-their-subscription-with-stripe-customer-portal/pages/api/stripe-hooks.js",
+      "line": 1,
+      "evidence": "mutation route without rate limit keyword",
+      "why_it_matters": "Public mutation endpoints can be abused.",
+      "remediation": "Add rate limiting around public mutation routes."
+    },
+    {
+      "id": "reliability.no_rate_limit",
+      "category": "reliability",
+      "severity": "high",
+      "title": "Public mutation endpoint has no rate-limit evidence",
+      "file": "25-subscribe-the-ui-to-database-changes-with-supabase-real-time/pages/api/stripe-hooks.js",
+      "line": 1,
+      "evidence": "mutation route without rate limit keyword",
+      "why_it_matters": "Public mutation endpoints can be abused.",
+      "remediation": "Add rate limiting around public mutation routes."
+    },
+    {
+      "id": "reliability.no_rate_limit",
+      "category": "reliability",
+      "severity": "high",
+      "title": "Public mutation endpoint has no rate-limit evidence",
+      "file": "26-configure-stripe-for-production-and-deploy-next-js-application-with-vercel/pages/api/stripe-hooks.js",
+      "line": 1,
+      "evidence": "mutation route without rate limit keyword",
+      "why_it_matters": "Public mutation endpoints can be abused.",
+      "remediation": "Add rate limiting around public mutation routes."
+    },
+    {
+      "id": "auth.no_middleware",
+      "category": "auth",
+      "severity": "medium",
+      "title": "No protected route middleware found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Next.js apps commonly need server-side route protection beyond client state.",
+      "remediation": "Add middleware or an equivalent server-side protected route pattern."
+    },
+    {
+      "id": "database.no_migrations",
+      "category": "database",
+      "severity": "medium",
+      "title": "No Supabase/Postgres migrations directory found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Production schema changes need reviewable migration history.",
+      "remediation": "Add migrations under supabase/migrations or an equivalent tracked migration folder."
+    },
+    {
+      "id": "payments.no_idempotency",
+      "category": "payments",
+      "severity": "medium",
+      "title": "Stripe event handling lacks idempotency evidence",
+      "file": "22-use-the-supabase-service-key-to-bypass-row-level-security/pages/api/stripe-hooks.js",
+      "line": 1,
+      "evidence": "event handler without idempotency keyword",
+      "why_it_matters": "Stripe may retry events, causing duplicate grants or updates.",
+      "remediation": "Store processed event IDs or use idempotent writes."
+    },
+    {
+      "id": "payments.no_idempotency",
+      "category": "payments",
+      "severity": "medium",
+      "title": "Stripe event handling lacks idempotency evidence",
+      "file": "23-create-a-client-page-that-requires-authentication-in-next-js-using-getserversideprops/pages/api/stripe-hooks.js",
+      "line": 1,
+      "evidence": "event handler without idempotency keyword",
+      "why_it_matters": "Stripe may retry events, causing duplicate grants or updates.",
+      "remediation": "Store processed event IDs or use idempotent writes."
+    },
+    {
+      "id": "payments.no_idempotency",
+      "category": "payments",
+      "severity": "medium",
+      "title": "Stripe event handling lacks idempotency evidence",
+      "file": "24-allow-customer-to-manage-their-subscription-with-stripe-customer-portal/pages/api/stripe-hooks.js",
+      "line": 1,
+      "evidence": "event handler without idempotency keyword",
+      "why_it_matters": "Stripe may retry events, causing duplicate grants or updates.",
+      "remediation": "Store processed event IDs or use idempotent writes."
+    },
+    {
+      "id": "payments.no_idempotency",
+      "category": "payments",
+      "severity": "medium",
+      "title": "Stripe event handling lacks idempotency evidence",
+      "file": "25-subscribe-the-ui-to-database-changes-with-supabase-real-time/pages/api/stripe-hooks.js",
+      "line": 1,
+      "evidence": "event handler without idempotency keyword",
+      "why_it_matters": "Stripe may retry events, causing duplicate grants or updates.",
+      "remediation": "Store processed event IDs or use idempotent writes."
+    },
+    {
+      "id": "payments.no_idempotency",
+      "category": "payments",
+      "severity": "medium",
+      "title": "Stripe event handling lacks idempotency evidence",
+      "file": "26-configure-stripe-for-production-and-deploy-next-js-application-with-vercel/pages/api/stripe-hooks.js",
+      "line": 1,
+      "evidence": "event handler without idempotency keyword",
+      "why_it_matters": "Stripe may retry events, causing duplicate grants or updates.",
+      "remediation": "Store processed event IDs or use idempotent writes."
+    },
+    {
+      "id": "reliability.no_ci",
+      "category": "reliability",
+      "severity": "medium",
+      "title": "No CI workflow found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Critical flows need automated checks before launch.",
+      "remediation": "Add a GitHub Actions workflow for tests and linting."
+    },
+    {
+      "id": "reliability.no_tests",
+      "category": "reliability",
+      "severity": "medium",
+      "title": "No tests found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Payment and auth regressions are easy to ship without tests.",
+      "remediation": "Add focused tests for auth, payments, and core flows."
+    },
+    {
+      "id": "secrets.missing_env_example",
+      "category": "secrets",
+      "severity": "medium",
+      "title": "No .env.example file found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Teams need a safe env contract without secret values.",
+      "remediation": "Add .env.example with placeholder values."
+    },
+    {
+      "id": "reliability.no_error_boundary",
+      "category": "reliability",
+      "severity": "low",
+      "title": "No Next.js error boundary evidence found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "User-facing failures should render controlled recovery UI.",
+      "remediation": "Add app/error.tsx or an ErrorBoundary component."
+    },
+    {
+      "id": "reliability.no_logging",
+      "category": "reliability",
+      "severity": "low",
+      "title": "No logging or error tracking evidence found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Production incidents need observable errors.",
+      "remediation": "Add structured logging or error tracking."
+    },
+    {
+      "id": "trust.no_contact",
+      "category": "trust",
+      "severity": "low",
+      "title": "No contact or support path found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Users need a clear support route before trusting a SaaS product.",
+      "remediation": "Add support email or contact page."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "03-create-a-next-js-app-with-tailwind-css/pages/api/hello.js",
+      "line": 4,
+      "evidence": "res.status(200).json({ name: John Doe })",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "04-query-data-from-supabase-using-next-js/pages/api/hello.js",
+      "line": 4,
+      "evidence": "res.status(200).json({ name: John Doe })",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "05-use-next-js-to-query-a-single-record-from-supabase/pages/api/hello.js",
+      "line": 4,
+      "evidence": "res.status(200).json({ name: John Doe })",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "06-implement-third-party-authentication-with-github-in-next-js-using-supabase/pages/api/hello.js",
+      "line": 4,
+      "evidence": "res.status(200).json({ name: John Doe })",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "07-add-relationships-between-tables-in-supabase-using-foreign-keys/pages/api/hello.js",
+      "line": 4,
+      "evidence": "res.status(200).json({ name: John Doe })",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "08-use-postgres-functions-to-implement-database-logic-with-supabase/pages/api/hello.js",
+      "line": 4,
+      "evidence": "res.status(200).json({ name: John Doe })",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "09-use-supabase-to-subscribe-to-database-events-with-postgres-triggers/pages/api/hello.js",
+      "line": 4,
+      "evidence": "res.status(200).json({ name: John Doe })",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "10-create-a-stripe-customer-with-next-js-api-routes/pages/api/hello.js",
+      "line": 4,
+      "evidence": "res.status(200).json({ name: John Doe })",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "11-generate-a-custom-api-key-to-secure-an-api-route-in-next-js/pages/api/hello.js",
+      "line": 4,
+      "evidence": "res.status(200).json({ name: John Doe })",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "12-automatically-create-a-stripe-customer-for-each-user-with-supabase-function-hooks/pages/api/hello.js",
+      "line": 4,
+      "evidence": "res.status(200).json({ name: John Doe })",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "13-make-user-state-globally-accessible-in-next-js-with-react-context-and-providers/pages/api/hello.js",
+      "line": 4,
+      "evidence": "res.status(200).json({ name: John Doe })",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "14-implement-authorization-using-row-level-security-and-policies/pages/api/hello.js",
+      "line": 4,
+      "evidence": "res.status(200).json({ name: John Doe })",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "15-implement-gated-content-using-row-level-security-with-supabase/pages/api/hello.js",
+      "line": 4,
+      "evidence": "res.status(200).json({ name: John Doe })",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "16-use-stripe-js-to-query-product-data-and-pre-render-with-next-js/pages/api/hello.js",
+      "line": 4,
+      "evidence": "res.status(200).json({ name: John Doe })",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "17-create-shared-nav-bar-in-next-js-with-_app-js/pages/api/hello.js",
+      "line": 4,
+      "evidence": "res.status(200).json({ name: John Doe })",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "18-query-dynamic-supabase-data-in-static-pages-using-next-js/pages/api/hello.js",
+      "line": 4,
+      "evidence": "res.status(200).json({ name: John Doe })",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "19-pass-supabase-session-cookie-to-api-route-to-identify-user/pages/api/hello.js",
+      "line": 4,
+      "evidence": "res.status(200).json({ name: John Doe })",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "20-charge-customer-for-stripe-subscription-in-next-js/pages/api/hello.js",
+      "line": 4,
+      "evidence": "res.status(200).json({ name: John Doe })",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "21-subscribe-to-stripe-webhooks-using-next-js-api-routes/pages/api/hello.js",
+      "line": 4,
+      "evidence": "res.status(200).json({ name: John Doe })",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "22-use-the-supabase-service-key-to-bypass-row-level-security/pages/api/hello.js",
+      "line": 4,
+      "evidence": "res.status(200).json({ name: John Doe })",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "23-create-a-client-page-that-requires-authentication-in-next-js-using-getserversideprops/pages/api/hello.js",
+      "line": 4,
+      "evidence": "res.status(200).json({ name: John Doe })",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "24-allow-customer-to-manage-their-subscription-with-stripe-customer-portal/pages/api/hello.js",
+      "line": 4,
+      "evidence": "res.status(200).json({ name: John Doe })",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "25-subscribe-the-ui-to-database-changes-with-supabase-real-time/pages/api/hello.js",
+      "line": 4,
+      "evidence": "res.status(200).json({ name: John Doe })",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "26-configure-stripe-for-production-and-deploy-next-js-application-with-vercel/pages/api/hello.js",
+      "line": 4,
+      "evidence": "res.status(200).json({ name: John Doe })",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    }
+  ]
+}
+

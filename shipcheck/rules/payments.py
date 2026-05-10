@@ -1,19 +1,20 @@
 from __future__ import annotations
 
 from shipcheck.models import AuditContext, Finding
-from .common import code_files, finding, line_has
+from .common import code_files, finding, is_generated_file, is_stripe_webhook_route, line_has, verifies_stripe_signature
 
 
 def check(ctx: AuditContext) -> list[Finding]:
     out: list[Finding] = []
-    stripe_files = [f for f in code_files(ctx) if "stripe" in f.text.lower() or "stripe" in f.rel_path.lower()]
-    uses_checkout = ctx.any_text("checkout.sessions.create", "stripe.redirecttocheckout", "price_")
+    scan_files = [f for f in code_files(ctx) if not is_generated_file(f.rel_path, f.text)]
+    stripe_files = [f for f in scan_files if "stripe" in f.text.lower() or "stripe" in f.rel_path.lower()]
+    uses_checkout = any(line_has(f.text, "checkout.sessions.create", "stripe.redirecttocheckout", "price_") for f in scan_files)
     has_completed = ctx.any_text("checkout.session.completed")
-    for f in code_files(ctx):
+    for f in scan_files:
         low_path = f.rel_path.lower()
         low_text = f.text.lower()
         is_stripe_related = f in stripe_files
-        if is_stripe_related and "webhook" in low_path and not line_has(low_text, "constructevent", "stripe-signature", "webhook_secret", "stripe_webhook_secret"):
+        if is_stripe_webhook_route(f) and not verifies_stripe_signature(f.text):
             out.append(finding("payments.webhook_no_signature", "payments", "high", "Stripe webhook does not verify signatures", f, 1, "webhook route without constructEvent", "Unsigned webhooks can be forged to grant access.", "Use stripe.webhooks.constructEvent with STRIPE_WEBHOOK_SECRET."))
         if "success" in low_path and line_has(low_text, "subscription", "entitlement", "premium", "paid", "active") and not line_has(low_text, "webhook"):
             out.append(finding("payments.success_grants_entitlement", "payments", "critical", "Checkout success path appears to grant entitlement", f, 1, "success route entitlement marker", "Success redirects are user-controlled and should not be the source of truth.", "Grant access only after verified Stripe webhook events."))

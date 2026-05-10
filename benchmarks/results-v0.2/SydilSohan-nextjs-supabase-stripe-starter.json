@@ -1,0 +1,147 @@
+﻿{
+  "target": "https://github.com/SydilSohan/nextjs-supabase-stripe-starter",
+  "profile": "next-supabase-stripe",
+  "files_scanned": 100,
+  "score": 29,
+  "verdict": "needs_work",
+  "summary": "Address the listed production-readiness gaps before launch.",
+  "categories": {
+    "secrets": {
+      "score": 0,
+      "max_score": 25
+    },
+    "auth": {
+      "score": 0,
+      "max_score": 20
+    },
+    "database": {
+      "score": 12,
+      "max_score": 20
+    },
+    "payments": {
+      "score": 0,
+      "max_score": 15
+    },
+    "reliability": {
+      "score": 9,
+      "max_score": 10
+    },
+    "trust": {
+      "score": 8,
+      "max_score": 10
+    }
+  },
+  "findings": [
+    {
+      "id": "database.no_rls_evidence",
+      "category": "database",
+      "severity": "high",
+      "title": "No row-level security enable statements found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Supabase apps rely on RLS to protect browser-accessible data.",
+      "remediation": "Enable RLS on sensitive tables and add scoped policies."
+    },
+    {
+      "id": "database.no_migrations",
+      "category": "database",
+      "severity": "medium",
+      "title": "No Supabase/Postgres migrations directory found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Production schema changes need reviewable migration history.",
+      "remediation": "Add migrations under supabase/migrations or an equivalent tracked migration folder."
+    },
+    {
+      "id": "reliability.no_ci",
+      "category": "reliability",
+      "severity": "medium",
+      "title": "No CI workflow found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Critical flows need automated checks before launch.",
+      "remediation": "Add a GitHub Actions workflow for tests and linting."
+    },
+    {
+      "id": "reliability.no_tests",
+      "category": "reliability",
+      "severity": "medium",
+      "title": "No tests found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Payment and auth regressions are easy to ship without tests.",
+      "remediation": "Add focused tests for auth, payments, and core flows."
+    },
+    {
+      "id": "trust.missing_legal",
+      "category": "trust",
+      "severity": "medium",
+      "title": "Privacy policy or terms page is missing",
+      "file": null,
+      "line": null,
+      "evidence": "privacy/terms",
+      "why_it_matters": "Apps collecting user or payment data need clear trust and legal surfaces.",
+      "remediation": "Add privacy and terms pages linked from the app."
+    },
+    {
+      "id": "reliability.no_error_boundary",
+      "category": "reliability",
+      "severity": "low",
+      "title": "No Next.js error boundary evidence found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "User-facing failures should render controlled recovery UI.",
+      "remediation": "Add app/error.tsx or an ErrorBoundary component."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "app/(user)/_components/Footer.tsx",
+      "line": 45,
+      "evidence": "Lorem Ipsum has been the industry&apos;s standard dummy text ever",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "app/(user)/_components/Testimonials.tsx",
+      "line": 30,
+      "evidence": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc et est",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "components/table/DataTable.tsx",
+      "line": 115,
+      "evidence": "{header.isPlaceholder",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "next.config.js",
+      "line": 35,
+      "evidence": "hostname: via.placeholder.com,",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    }
+  ]
+}
+

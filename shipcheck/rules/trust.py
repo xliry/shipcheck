@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from shipcheck.models import AuditContext, Finding
-from .common import finding, line_has
+from .common import finding, is_generated_file, is_jsx_placeholder_attribute, is_tailwind_placeholder_class, line_has
 
 PLACEHOLDERS = ("lorem ipsum", "coming soon", "todo", "placeholder", "john doe", "acme")
 AI_COPY = ("ai-powered", "revolutionary", "10x", "game changer", "magical", "vibe-coded")
@@ -9,7 +9,7 @@ AI_COPY = ("ai-powered", "revolutionary", "10x", "game changer", "magical", "vib
 
 def check(ctx: AuditContext) -> list[Finding]:
     out: list[Finding] = []
-    text_files = ctx.by_suffix(".md", ".tsx", ".jsx", ".ts", ".js")
+    text_files = [f for f in ctx.by_suffix(".md", ".tsx", ".jsx", ".ts", ".js") if not is_generated_file(f.rel_path, f.text)]
     has_privacy = any("privacy" in f.rel_path.lower() for f in ctx.files)
     has_terms = any("terms" in f.rel_path.lower() for f in ctx.files)
     collects_data = ctx.any_text("email", "customer", "subscription", "payment", "supabase", "stripe")
@@ -20,6 +20,8 @@ def check(ctx: AuditContext) -> list[Finding]:
     for f in text_files:
         for idx, line in enumerate(f.text.splitlines(), 1):
             if line_has(line, *PLACEHOLDERS):
+                if is_jsx_placeholder_attribute(line) or is_tailwind_placeholder_class(line):
+                    continue
                 out.append(finding("trust.placeholder_copy", "trust", "low", "Placeholder copy found", f, idx, line, "Placeholder content reduces buyer trust.", "Replace placeholders with specific product copy."))
                 break
         if line_has(f.text, *AI_COPY):

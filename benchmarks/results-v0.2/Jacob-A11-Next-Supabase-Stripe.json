@@ -1,0 +1,158 @@
+﻿{
+  "target": "https://github.com/Jacob-A11/Next-Supabase-Stripe",
+  "profile": "next-supabase-stripe",
+  "files_scanned": 50,
+  "score": 36,
+  "verdict": "needs_work",
+  "summary": "Address the listed production-readiness gaps before launch.",
+  "categories": {
+    "secrets": {
+      "score": 0,
+      "max_score": 25
+    },
+    "auth": {
+      "score": 8,
+      "max_score": 20
+    },
+    "database": {
+      "score": 12,
+      "max_score": 20
+    },
+    "payments": {
+      "score": 0,
+      "max_score": 15
+    },
+    "reliability": {
+      "score": 10,
+      "max_score": 10
+    },
+    "trust": {
+      "score": 6,
+      "max_score": 10
+    }
+  },
+  "findings": [
+    {
+      "id": "auth.api_mutation_no_guard",
+      "category": "auth",
+      "severity": "high",
+      "title": "API mutation route has no auth guard evidence",
+      "file": "app/api/generator/route.ts",
+      "line": 1,
+      "evidence": "mutation route without auth keyword",
+      "why_it_matters": "Unauthenticated mutation endpoints can expose user data or admin actions.",
+      "remediation": "Verify users server-side before mutating data."
+    },
+    {
+      "id": "database.no_rls_evidence",
+      "category": "database",
+      "severity": "high",
+      "title": "No row-level security enable statements found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Supabase apps rely on RLS to protect browser-accessible data.",
+      "remediation": "Enable RLS on sensitive tables and add scoped policies."
+    },
+    {
+      "id": "reliability.no_rate_limit",
+      "category": "reliability",
+      "severity": "high",
+      "title": "Public mutation endpoint has no rate-limit evidence",
+      "file": "app/api/generator/route.ts",
+      "line": 1,
+      "evidence": "mutation route without rate limit keyword",
+      "why_it_matters": "Public mutation endpoints can be abused.",
+      "remediation": "Add rate limiting around public mutation routes."
+    },
+    {
+      "id": "database.no_migrations",
+      "category": "database",
+      "severity": "medium",
+      "title": "No Supabase/Postgres migrations directory found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Production schema changes need reviewable migration history.",
+      "remediation": "Add migrations under supabase/migrations or an equivalent tracked migration folder."
+    },
+    {
+      "id": "reliability.no_ci",
+      "category": "reliability",
+      "severity": "medium",
+      "title": "No CI workflow found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Critical flows need automated checks before launch.",
+      "remediation": "Add a GitHub Actions workflow for tests and linting."
+    },
+    {
+      "id": "reliability.no_tests",
+      "category": "reliability",
+      "severity": "medium",
+      "title": "No tests found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Payment and auth regressions are easy to ship without tests.",
+      "remediation": "Add focused tests for auth, payments, and core flows."
+    },
+    {
+      "id": "trust.missing_legal",
+      "category": "trust",
+      "severity": "medium",
+      "title": "Privacy policy or terms page is missing",
+      "file": null,
+      "line": null,
+      "evidence": "privacy/terms",
+      "why_it_matters": "Apps collecting user or payment data need clear trust and legal surfaces.",
+      "remediation": "Add privacy and terms pages linked from the app."
+    },
+    {
+      "id": "reliability.no_error_boundary",
+      "category": "reliability",
+      "severity": "low",
+      "title": "No Next.js error boundary evidence found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "User-facing failures should render controlled recovery UI.",
+      "remediation": "Add app/error.tsx or an ErrorBoundary component."
+    },
+    {
+      "id": "reliability.no_logging",
+      "category": "reliability",
+      "severity": "low",
+      "title": "No logging or error tracking evidence found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Production incidents need observable errors.",
+      "remediation": "Add structured logging or error tracking."
+    },
+    {
+      "id": "trust.no_contact",
+      "category": "trust",
+      "severity": "low",
+      "title": "No contact or support path found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Users need a clear support route before trusting a SaaS product.",
+      "remediation": "Add support email or contact page."
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "README.md",
+      "line": 84,
+      "evidence": "- Usage-based plans (coming soon)",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy."
+    }
+  ]
+}
+

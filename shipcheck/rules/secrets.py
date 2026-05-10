@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 
 from shipcheck.models import AuditContext, Finding
-from .common import finding, is_client_path, line_has
+from .common import finding, is_likely_client_reachable, line_has
 
 SECRET_PATTERNS = [
     ("secrets.openai_key", "OpenAI API key appears in source", re.compile(r"sk-[A-Za-z0-9_-]{20,}")),
@@ -11,6 +11,11 @@ SECRET_PATTERNS = [
     ("secrets.jwt", "JWT-like secret appears in source", re.compile(r"eyJ[A-Za-z0-9_-]{12,}\.[A-Za-z0-9_-]{12,}")),
 ]
 PUBLIC_SECRET = re.compile(r"NEXT_PUBLIC_[A-Z0-9_]*(SECRET|TOKEN|PRIVATE|SERVICE_ROLE|API_KEY)[A-Z0-9_]*")
+PUBLISHABLE_PUBLIC_NAMES = (
+    "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
+)
 
 
 def check(ctx: AuditContext) -> list[Finding]:
@@ -20,11 +25,11 @@ def check(ctx: AuditContext) -> list[Finding]:
     for f in ctx.files:
         if f.rel_path in {".env", ".env.local", ".env.production"}:
             out.append(finding("secrets.env_committed", "secrets", "critical", "Environment file appears committed", f, evidence=f.rel_path, why="Committed env files often contain production credentials.", fix="Remove committed env files, rotate exposed values, and commit only .env.example."))
-        if "SUPABASE_SERVICE_ROLE_KEY" in f.text and is_client_path(f.rel_path):
+        if "SUPABASE_SERVICE_ROLE_KEY" in f.text and is_likely_client_reachable(f.rel_path, f.text):
             line = next((i for i, l in enumerate(f.text.splitlines(), 1) if "SUPABASE_SERVICE_ROLE_KEY" in l), None)
             out.append(finding("secrets.client_service_role", "secrets", "critical", "Supabase service role key appears in client-accessible code", f, line, "SUPABASE_SERVICE_ROLE_KEY", "Service role keys bypass RLS and must never reach browser bundles.", "Move service-role usage to trusted server-only code."))
         for idx, line in enumerate(f.text.splitlines(), 1):
-            if PUBLIC_SECRET.search(line):
+            if PUBLIC_SECRET.search(line) and not line_has(line, *PUBLISHABLE_PUBLIC_NAMES):
                 out.append(finding("secrets.public_secret_name", "secrets", "high", "Secret-like value is exposed through NEXT_PUBLIC", f, idx, line, "NEXT_PUBLIC variables are bundled for the browser.", "Use server-only env names for secrets."))
             for id_, title, rx in SECRET_PATTERNS:
                 if rx.search(line):

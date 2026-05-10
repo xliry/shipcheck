@@ -6,8 +6,9 @@ def test_webhook_route_does_not_get_generic_rate_limit_finding(tmp_path):
     route.mkdir(parents=True)
     (route / "route.ts").write_text(
         """
+        import Stripe from "stripe";
         export async function POST(req: Request) {
-          const event = await req.json();
+          const event = { type: "checkout.session.completed" };
           return Response.json({ received: true });
         }
         """,
