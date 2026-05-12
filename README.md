@@ -2,6 +2,8 @@
 
 Launch-readiness gate for vibe-coded SaaS apps.
 
+![ShipCheck explainer](docs/assets/shipcheck-explainer.png)
+
 ShipCheck is a deterministic Python CLI for reviewing AI-built SaaS repositories before launch. It is not a security scanner, SAST platform, dependency vulnerability database, or secret-revocation tool. It is a launch checklist/audit tool for the failure modes that often hide behind working demos.
 
 ShipCheck does not compete with Semgrep, Snyk, or Gitleaks. Use those tools for static analysis, dependency risk, and dedicated secret scanning. Use ShipCheck as a practical launch-readiness gate that asks: "Would a senior engineer block this vibe-coded SaaS from shipping?"

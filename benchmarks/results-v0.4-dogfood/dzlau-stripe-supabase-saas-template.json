@@ -1,0 +1,216 @@
+﻿{
+  "target": "https://github.com/dzlau/stripe-supabase-saas-template",
+  "profile": "next-supabase-stripe",
+  "files_scanned": 57,
+  "score": 44,
+  "verdict": "needs_work",
+  "summary": "Address the listed production-readiness gaps before launch.",
+  "categories": {
+    "secrets": {
+      "score": 0,
+      "max_score": 25
+    },
+    "auth": {
+      "score": 0,
+      "max_score": 20
+    },
+    "database": {
+      "score": 20,
+      "max_score": 20
+    },
+    "payments": {
+      "score": 8,
+      "max_score": 15
+    },
+    "reliability": {
+      "score": 9,
+      "max_score": 10
+    },
+    "trust": {
+      "score": 7,
+      "max_score": 10
+    }
+  },
+  "findings": [
+    {
+      "id": "database.no_rls_evidence",
+      "category": "database",
+      "severity": "high",
+      "title": "No row-level security enable statements found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Supabase apps rely on RLS to protect browser-accessible data.",
+      "remediation": "Enable RLS on sensitive tables and add scoped policies.",
+      "duplicate_count": null,
+      "duplicate_examples": [],
+      "deduped_by": null,
+      "suppressed_duplicates": null
+    },
+    {
+      "id": "database.no_policies",
+      "category": "database",
+      "severity": "high",
+      "title": "No SQL policy definitions found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "RLS without policies can block access or lead to unsafe workarounds.",
+      "remediation": "Add explicit policies for authenticated access.",
+      "duplicate_count": null,
+      "duplicate_examples": [],
+      "deduped_by": null,
+      "suppressed_duplicates": null
+    },
+    {
+      "id": "database.sensitive_tables_without_rls",
+      "category": "database",
+      "severity": "high",
+      "title": "Sensitive table names found without RLS evidence",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Customer, payment, and user tables need explicit access boundaries.",
+      "remediation": "Add RLS and policies for sensitive tables.",
+      "duplicate_count": null,
+      "duplicate_examples": [],
+      "deduped_by": null,
+      "suppressed_duplicates": null
+    },
+    {
+      "id": "payments.no_idempotency",
+      "category": "payments",
+      "severity": "medium",
+      "title": "Stripe event handling lacks idempotency evidence",
+      "file": "app/webhook/stripe/route.ts",
+      "line": 1,
+      "evidence": "event handler without idempotency keyword",
+      "why_it_matters": "Stripe may retry events, causing duplicate grants or updates.",
+      "remediation": "Store processed event IDs or use idempotent writes.",
+      "duplicate_count": null,
+      "duplicate_examples": [],
+      "deduped_by": null,
+      "suppressed_duplicates": null
+    },
+    {
+      "id": "payments.no_idempotency",
+      "category": "payments",
+      "severity": "medium",
+      "title": "Stripe event handling lacks idempotency evidence",
+      "file": "stripeSetup.ts",
+      "line": 1,
+      "evidence": "event handler without idempotency keyword",
+      "why_it_matters": "Stripe may retry events, causing duplicate grants or updates.",
+      "remediation": "Store processed event IDs or use idempotent writes.",
+      "duplicate_count": null,
+      "duplicate_examples": [],
+      "deduped_by": null,
+      "suppressed_duplicates": null
+    },
+    {
+      "id": "reliability.no_ci",
+      "category": "reliability",
+      "severity": "medium",
+      "title": "No CI workflow found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Critical flows need automated checks before launch.",
+      "remediation": "Add a GitHub Actions workflow for tests and linting.",
+      "duplicate_count": null,
+      "duplicate_examples": [],
+      "deduped_by": null,
+      "suppressed_duplicates": null
+    },
+    {
+      "id": "reliability.no_tests",
+      "category": "reliability",
+      "severity": "medium",
+      "title": "No tests found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Payment and auth regressions are easy to ship without tests.",
+      "remediation": "Add focused tests for auth, payments, and core flows.",
+      "duplicate_count": null,
+      "duplicate_examples": [],
+      "deduped_by": null,
+      "suppressed_duplicates": null
+    },
+    {
+      "id": "trust.missing_legal",
+      "category": "trust",
+      "severity": "medium",
+      "title": "Privacy policy or terms page is missing",
+      "file": null,
+      "line": null,
+      "evidence": "privacy/terms",
+      "why_it_matters": "Apps collecting user or payment data need clear trust and legal surfaces.",
+      "remediation": "Add privacy and terms pages linked from the app.",
+      "duplicate_count": null,
+      "duplicate_examples": [],
+      "deduped_by": null,
+      "suppressed_duplicates": null
+    },
+    {
+      "id": "reliability.no_error_boundary",
+      "category": "reliability",
+      "severity": "low",
+      "title": "No Next.js error boundary evidence found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "User-facing failures should render controlled recovery UI.",
+      "remediation": "Add app/error.tsx or an ErrorBoundary component.",
+      "duplicate_count": null,
+      "duplicate_examples": [],
+      "deduped_by": null,
+      "suppressed_duplicates": null
+    },
+    {
+      "id": "trust.no_contact",
+      "category": "trust",
+      "severity": "low",
+      "title": "No contact or support path found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Users need a clear support route before trusting a SaaS product.",
+      "remediation": "Add support email or contact page.",
+      "duplicate_count": null,
+      "duplicate_examples": [],
+      "deduped_by": null,
+      "suppressed_duplicates": null
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "app/page.tsx",
+      "line": 47,
+      "evidence": "<span className=sr-only>Acme Inc</span>",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy.",
+      "duplicate_count": null,
+      "duplicate_examples": [],
+      "deduped_by": null,
+      "suppressed_duplicates": null
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "app/subscribe/page.tsx",
+      "line": 16,
+      "evidence": "<span className=sr-only>Acme Inc</span>",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy.",
+      "duplicate_count": null,
+      "duplicate_examples": [],
+      "deduped_by": null,
+      "suppressed_duplicates": null
+    }
+  ]
+}
