@@ -1,9 +1,65 @@
 from __future__ import annotations
 
-from pathlib import Path
+import re
 
 from shipcheck.models import AuditContext, Finding
-from .common import finding, is_likely_client_reachable, line_has
+from .common import (
+    extract_supabase_policy_context,
+    finding,
+    is_likely_client_reachable,
+    severity_for_wide_open_policy,
+)
+
+
+POLICY_BLOCK_RE = re.compile(r"\b(?:create|alter)\s+policy\b.*?(?:;|$)", re.IGNORECASE | re.DOTALL)
+
+
+def _one_line(text: str) -> str:
+    return " ".join(text.strip().split())
+
+
+def _wide_open_policy_copy(context) -> tuple[str, str, str]:
+    table = context.table or "unknown table"
+    operation = context.operation or "unknown operation"
+    is_write = operation in {"insert", "update", "delete", "all"} or context.expression_kind in {
+        "with_check_true",
+        "using_and_check_true",
+    }
+    if is_write:
+        return (
+            f"Wide-open write policy on {table}",
+            f"Public writes can mutate {table} data unless another boundary exists.",
+            "Scope write policies to authenticated users, ownership, or admin roles.",
+        )
+    if context.table_class in {"public_catalog", "content_public"} and operation == "select":
+        return (
+            f"Public read policy on {table}",
+            f"Public read access on {table} may be intentional for catalog or content display.",
+            "Verify the table contains only intentionally public data.",
+        )
+    if context.table_class == "billing_sensitive":
+        return (
+            f"Wide-open policy on billing-sensitive table {table}",
+            f"Public access can expose customer billing state from {table}.",
+            "Scope policies to authenticated users, ownership, or trusted service roles.",
+        )
+    if context.table_class == "auth_security":
+        return (
+            f"Wide-open policy on auth/security table {table}",
+            f"Public access can expose security-sensitive records from {table}.",
+            "Restrict access to trusted server-side roles or explicit authorization checks.",
+        )
+    if context.table_class == "user_private":
+        return (
+            f"Wide-open policy on user-private table {table}",
+            f"Public access can expose private user or account records from {table}.",
+            "Scope policies to the current user, team membership, or admin roles.",
+        )
+    return (
+        f"Wide-open policy on table {table}",
+        f"ShipCheck could not classify {table} sensitivity; verify this public policy is intentional.",
+        "Replace true with an explicit ownership, role, or public-read condition.",
+    )
 
 
 def check(ctx: AuditContext) -> list[Finding]:
@@ -19,10 +75,17 @@ def check(ctx: AuditContext) -> list[Finding]:
     if uses_supabase and "create policy" not in all_sql and sql_files:
         out.append(finding("database.no_policies", "database", "high", "No SQL policy definitions found", why="RLS without policies can block access or lead to unsafe workarounds.", fix="Add explicit policies for authenticated access."))
     for f in sql_files:
+        for match in POLICY_BLOCK_RE.finditer(f.text):
+            block = match.group(0)
+            if not re.search(r"\b(?:using|with\s+check)\s*\(\s*true\s*\)", block, re.IGNORECASE):
+                continue
+            line = f.text[: match.start()].count("\n") + 1
+            context = extract_supabase_policy_context(block)
+            severity = severity_for_wide_open_policy(context)
+            title, why, fix = _wide_open_policy_copy(context)
+            out.append(finding("database.wide_open_policy", "database", severity, title, f, line, _one_line(block), why, fix))
         for idx, line in enumerate(f.text.splitlines(), 1):
             low = line.lower()
-            if "using (true)" in low or "with check (true)" in low:
-                out.append(finding("database.wide_open_policy", "database", "high", "Wide-open RLS policy found", f, idx, line, "Policies using true can expose all rows unless tightly limited elsewhere.", "Scope policies to authenticated users, ownership, or admin roles."))
             if "disable row level security" in low:
                 out.append(finding("database.rls_disabled", "database", "critical", "Row-level security is disabled", f, idx, line, "Disabling RLS on sensitive data can expose customer records.", "Enable RLS and define scoped policies."))
     for f in ctx.files:

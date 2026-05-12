@@ -23,6 +23,10 @@ class Finding:
     evidence: str | None = None
     why_it_matters: str = ""
     remediation: str = ""
+    duplicate_count: int | None = None
+    duplicate_examples: tuple[str, ...] = ()
+    deduped_by: str | None = None
+    suppressed_duplicates: int | None = None
 
 
 @dataclass

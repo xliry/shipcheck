@@ -22,7 +22,10 @@ def render_terminal(report) -> None:
     console.print(table)
     for finding in report.findings[:10]:
         loc = f" ({finding.file}:{finding.line})" if finding.file and finding.line else ""
-        console.print(f"[bold]{finding.severity.upper()}[/bold] {finding.title}{loc}")
+        repeated = ""
+        if finding.suppressed_duplicates:
+            repeated = f" (repeated in {finding.suppressed_duplicates} tutorial/example locations)"
+        console.print(f"[bold]{finding.severity.upper()}[/bold] {finding.title}{loc}{repeated}")
 
 
 def render_markdown(report) -> str:
@@ -31,7 +34,11 @@ def render_markdown(report) -> str:
         f"Verdict: **{report.verdict}**", "", report.summary, "", "## Top Risks", "",
     ]
     top = report.findings[:5]
-    lines.extend([f"{i}. [{f.severity.upper()}] {f.title}" for i, f in enumerate(top, 1)] or ["No findings."])
+    lines.extend([
+        f"{i}. [{f.severity.upper()}] {f.title}"
+        + (f" (repeated in {f.suppressed_duplicates} tutorial/example locations)" if f.suppressed_duplicates else "")
+        for i, f in enumerate(top, 1)
+    ] or ["No findings."])
     lines.extend(["", "## Category Breakdown", ""])
     for name, data in report.categories.items():
         lines.append(f"- {name}: {data['score']}/{data['max_score']}")
@@ -46,4 +53,11 @@ def render_markdown(report) -> str:
             f"- Evidence: `{f.evidence or 'No direct snippet'}`",
             f"- Why it matters: {f.why_it_matters}", f"- Remediation: {f.remediation}", "",
         ])
+        if f.suppressed_duplicates:
+            examples = ", ".join(f.duplicate_examples)
+            lines.extend([
+                f"- Duplicate grouping: repeated in {f.suppressed_duplicates} tutorial/example locations.",
+                f"- Representative examples: {examples}",
+                "",
+            ])
     return "\n".join(lines)

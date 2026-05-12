@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from .models import AuditContext, AuditReport, Finding
+from .dedup import deduplicate_findings
 from .scanner import cleanup_tmp, collect_files, resolve_target
 from .scoring import score_findings, summary
 from .rules import auth, database, payments, reliability, secrets, trust
@@ -16,6 +17,7 @@ def run_audit(target: str, profile: str = "next-supabase-stripe", max_files: int
         findings: list[Finding] = []
         for module in RULE_MODULES:
             findings.extend(module.check(ctx))
+        findings = deduplicate_findings(findings)
         findings.sort(key=lambda f: ({"critical": 0, "high": 1, "medium": 2, "low": 3}[f.severity], f.category, f.file or ""))
         score, verdict, categories = score_findings(findings)
         return AuditReport(target=target, profile=profile, files_scanned=len(files), score=score, verdict=verdict, summary=summary(score), categories=categories, findings=findings)
