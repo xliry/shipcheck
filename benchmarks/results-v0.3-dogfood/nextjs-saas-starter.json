@@ -1,0 +1,156 @@
+﻿{
+  "target": "https://github.com/nextjs/saas-starter",
+  "profile": "next-supabase-stripe",
+  "files_scanned": 52,
+  "score": 20,
+  "verdict": "launchable",
+  "summary": "No launch-blocking evidence found by ShipCheck heuristics.",
+  "categories": {
+    "secrets": {
+      "score": 0,
+      "max_score": 25
+    },
+    "auth": {
+      "score": 0,
+      "max_score": 20
+    },
+    "database": {
+      "score": 0,
+      "max_score": 20
+    },
+    "payments": {
+      "score": 4,
+      "max_score": 15
+    },
+    "reliability": {
+      "score": 9,
+      "max_score": 10
+    },
+    "trust": {
+      "score": 7,
+      "max_score": 10
+    }
+  },
+  "findings": [
+    {
+      "id": "payments.no_idempotency",
+      "category": "payments",
+      "severity": "medium",
+      "title": "Stripe event handling lacks idempotency evidence",
+      "file": "app/api/stripe/webhook/route.ts",
+      "line": 1,
+      "evidence": "event handler without idempotency keyword",
+      "why_it_matters": "Stripe may retry events, causing duplicate grants or updates.",
+      "remediation": "Store processed event IDs or use idempotent writes.",
+      "duplicate_count": null,
+      "duplicate_examples": [],
+      "deduped_by": null,
+      "suppressed_duplicates": null
+    },
+    {
+      "id": "reliability.no_ci",
+      "category": "reliability",
+      "severity": "medium",
+      "title": "No CI workflow found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Critical flows need automated checks before launch.",
+      "remediation": "Add a GitHub Actions workflow for tests and linting.",
+      "duplicate_count": null,
+      "duplicate_examples": [],
+      "deduped_by": null,
+      "suppressed_duplicates": null
+    },
+    {
+      "id": "reliability.no_tests",
+      "category": "reliability",
+      "severity": "medium",
+      "title": "No tests found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "Payment and auth regressions are easy to ship without tests.",
+      "remediation": "Add focused tests for auth, payments, and core flows.",
+      "duplicate_count": null,
+      "duplicate_examples": [],
+      "deduped_by": null,
+      "suppressed_duplicates": null
+    },
+    {
+      "id": "trust.missing_legal",
+      "category": "trust",
+      "severity": "medium",
+      "title": "Privacy policy or terms page is missing",
+      "file": null,
+      "line": null,
+      "evidence": "privacy/terms",
+      "why_it_matters": "Apps collecting user or payment data need clear trust and legal surfaces.",
+      "remediation": "Add privacy and terms pages linked from the app.",
+      "duplicate_count": null,
+      "duplicate_examples": [],
+      "deduped_by": null,
+      "suppressed_duplicates": null
+    },
+    {
+      "id": "reliability.no_error_boundary",
+      "category": "reliability",
+      "severity": "low",
+      "title": "No Next.js error boundary evidence found",
+      "file": null,
+      "line": null,
+      "evidence": null,
+      "why_it_matters": "User-facing failures should render controlled recovery UI.",
+      "remediation": "Add app/error.tsx or an ErrorBoundary component.",
+      "duplicate_count": null,
+      "duplicate_examples": [],
+      "deduped_by": null,
+      "suppressed_duplicates": null
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "app/(dashboard)/layout.tsx",
+      "line": 87,
+      "evidence": "<span className=ml-2 text-xl font-semibold text-gray-900>ACME</span>",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy.",
+      "duplicate_count": null,
+      "duplicate_examples": [],
+      "deduped_by": null,
+      "suppressed_duplicates": null
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "app/(login)/actions.ts",
+      "line": 454,
+      "evidence": "// TODO: Send invitation email and include ?inviteId={id} to sign-up URL",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy.",
+      "duplicate_count": null,
+      "duplicate_examples": [],
+      "deduped_by": null,
+      "suppressed_duplicates": null
+    },
+    {
+      "id": "trust.placeholder_copy",
+      "category": "trust",
+      "severity": "low",
+      "title": "Placeholder copy found",
+      "file": "app/(login)/login.tsx",
+      "line": 57,
+      "evidence": "className=appearance-none rounded-full relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-o",
+      "why_it_matters": "Placeholder content reduces buyer trust.",
+      "remediation": "Replace placeholders with specific product copy.",
+      "duplicate_count": null,
+      "duplicate_examples": [],
+      "deduped_by": null,
+      "suppressed_duplicates": null
+    }
+  ]
+}
