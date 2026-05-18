@@ -1,4 +1,4 @@
-from shipcheck.engine import run_audit
+﻿from shipcheck.engine import run_audit
 
 
 def test_bad_fixture_flags_payment_risks():
@@ -68,6 +68,32 @@ def test_verified_stripe_webhook_avoids_signature_finding(tmp_path):
     assert not any(f.id == "payments.webhook_no_signature" for f in report.findings)
 
 
+def test_vite_vercel_stripe_webhook_signature_and_payment_id_are_clean(tmp_path):
+    api = tmp_path / "api"
+    api.mkdir()
+    (api / "stripe-webhook.ts").write_text(
+        """
+        import Stripe from "stripe";
+        export default async function handler(req, res) {
+          const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+          const signature = req.headers["stripe-signature"];
+          const event = stripe.webhooks.constructEvent(req.body, signature, process.env.STRIPE_WEBHOOK_SECRET!);
+          if (event.type === "checkout.session.completed") {
+            const stripe_payment_id = event.data.object.payment_intent;
+            const existing = await supabase.from("payments").select("id").eq("stripe_payment_id", stripe_payment_id).single();
+            if (!existing.data) await supabase.from("payments").insert({ stripe_payment_id });
+          }
+          res.status(200).json({ received: true });
+        }
+        """,
+        encoding="utf-8",
+    )
+    report = run_audit(str(tmp_path))
+    ids = {f.id for f in report.findings}
+    assert "payments.webhook_no_signature" not in ids
+    assert "payments.no_idempotency" not in ids
+
+
 def test_generated_file_with_price_id_does_not_get_hardcoded_price(tmp_path):
     generated = tmp_path / "supabase" / "types_db.ts"
     generated.parent.mkdir(parents=True)
@@ -80,3 +106,12 @@ def test_generated_file_with_price_id_does_not_get_hardcoded_price(tmp_path):
     )
     report = run_audit(str(tmp_path))
     assert not any(f.id == "payments.hardcoded_price" for f in report.findings)
+
+
+def test_vite_active_project_fixture_keeps_verified_webhook_clean():
+    report = run_audit("tests/fixtures/active_project_vite_supabase_stripe")
+    ids = {f.id for f in report.findings}
+    assert "payments.webhook_no_signature" not in ids
+    assert "payments.no_idempotency" not in ids
+    assert "payments.hardcoded_price" in ids
+

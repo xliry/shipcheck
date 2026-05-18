@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 
 from shipcheck.models import AuditContext, Finding
-from .common import code_files, finding, is_api_route, is_stripe_webhook_route, line_has
+from .common import code_files, detect_app_context, finding, is_api_route, is_stripe_webhook_route, line_has
 
 AUTH_WORDS = (
     "requireAuth",
@@ -21,9 +21,30 @@ ROLE_WORDS = ("role", "admin", "isAdmin", "permissions", "claims")
 def check(ctx: AuditContext) -> list[Finding]:
     out: list[Finding] = []
     uses_auth = ctx.any_text("@supabase/supabase-js", "next-auth", "clerk", "supabase.auth", "getServerSession")
+    app = detect_app_context(ctx)
     has_middleware = any(f.rel_path in {"middleware.ts", "middleware.js", "src/middleware.ts"} for f in ctx.files)
     if uses_auth and not has_middleware:
-        out.append(finding("auth.no_middleware", "auth", "medium", "No protected route middleware found", why="Next.js apps commonly need server-side route protection beyond client state.", fix="Add middleware or an equivalent server-side protected route pattern."))
+        if app.stack == "vite-react":
+            if app.has_client_route_guard:
+                out.append(finding(
+                    "auth.no_middleware",
+                    "auth",
+                    "medium",
+                    "Client-side route protection found; verify server-side API enforcement",
+                    why="React Router guards protect navigation UX, but API and paid flows still need server-side authorization checks.",
+                    fix="Verify Vercel/Cloud Run/API handlers check Supabase auth or service boundaries before mutating user data.",
+                ))
+            else:
+                out.append(finding(
+                    "auth.no_middleware",
+                    "auth",
+                    "medium",
+                    "No obvious protected route pattern found",
+                    why="Single-page apps still need route gating plus server-side authorization for API calls.",
+                    fix="Add a React Router guard for protected screens and verify server-side checks on API and paid flows.",
+                ))
+        else:
+            out.append(finding("auth.no_middleware", "auth", "medium", "No protected route middleware found", why="Next.js apps commonly need server-side route protection beyond client state.", fix="Add middleware or an equivalent server-side protected route pattern."))
     for f in code_files(ctx):
         low_path = f.rel_path.lower()
         if is_api_route(f.rel_path):

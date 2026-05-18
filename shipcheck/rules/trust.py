@@ -23,7 +23,7 @@ def is_import_line(line: str) -> bool:
 
 def is_comment_only_line(line: str) -> bool:
     stripped = line.strip()
-    return stripped.startswith(("//", "/*", "*", "#"))
+    return stripped.startswith(("//", "/*", "{/*", "*", "#")) or bool(re.search(r"\{/\*.*\*/\}", stripped))
 
 
 def is_type_or_interface_line(line: str) -> bool:
@@ -50,6 +50,21 @@ def is_tailwind_placeholder_utility(line: str) -> bool:
     return is_tailwind_placeholder_class(line) or bool(re.search(r"\bplaceholder-[a-z0-9_/\-[\]:.]+", line.lower()))
 
 
+def is_internal_placeholder_identifier_line(line: str) -> bool:
+    stripped = line.strip()
+    is_rendered_or_prose = bool(
+        re.search(r">\s*[^<]*(?:placeholder|coming soon)[^<]*\s*<", stripped, re.IGNORECASE)
+        or stripped.startswith(("#", "-", "*", ">"))
+    )
+    if is_rendered_or_prose:
+        return False
+    if re.search(r"\b[A-Z0-9_]*PLACEHOLDER[A-Z0-9_]*\b", line):
+        return True
+    if re.search(r"\b(?:[A-Za-z_$][\w$]*Placeholder[\w$]*|placeholder[A-Z_][\w$]*)\b", line):
+        return True
+    return False
+
+
 def is_likely_rendered_copy_line(line: str) -> bool:
     stripped = line.strip()
     if re.search(r">\s*[^<]*(?:lorem ipsum|coming soon|todo|placeholder|john doe|jane doe|acme)[^<]*\s*<", stripped, re.IGNORECASE):
@@ -67,6 +82,8 @@ def is_code_symbol_placeholder_context(line: str) -> bool:
     if is_import_line(line):
         return True
     if is_type_or_interface_line(line):
+        return True
+    if is_internal_placeholder_identifier_line(line):
         return True
     if is_function_or_identifier_line(line):
         return True

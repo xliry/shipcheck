@@ -26,6 +26,8 @@ def main(target: str, as_json: bool, markdown: str, threshold: int | None, profi
         raise click.ClickException(str(exc)) from exc
     if as_json:
         click.echo(render_json(report))
+        if markdown != "shipcheck-report.md":
+            Path(markdown).write_text(render_markdown(report), encoding="utf-8")
     else:
         render_terminal(report)
         Path(markdown).write_text(render_markdown(report), encoding="utf-8")

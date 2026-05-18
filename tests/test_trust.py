@@ -1,4 +1,4 @@
-from shipcheck.engine import run_audit
+﻿from shipcheck.engine import run_audit
 
 
 def _report_for_source(tmp_path, rel_path: str, text: str):
@@ -83,6 +83,31 @@ def test_placeholder_prop_identifier_usage_does_not_count(tmp_path):
         const Input = ({ placeholder }) => {
           return <TextInput placeholderTextColor={colors.icon} placeholder={placeholder} />
         }
+        """,
+    )
+    assert not _has_placeholder(report)
+
+
+def test_jsx_placeholder_comment_does_not_count(tmp_path):
+    report = _report_for_source(
+        tmp_path,
+        "components/RenderQueue/RenderQueuePanel.tsx",
+        """
+        export function Panel() {
+          return <div>{/* Thumbnail / placeholder */}</div>
+        }
+        """,
+    )
+    assert not _has_placeholder(report)
+
+
+def test_uppercase_internal_placeholder_constant_does_not_count(tmp_path):
+    report = _report_for_source(
+        tmp_path,
+        "contexts/RenderQueueContext.tsx",
+        """
+        const OPTIMISTIC_PLACEHOLDER_TTL_MS = 30_000;
+        const expired = now - item.startedAt > OPTIMISTIC_PLACEHOLDER_TTL_MS;
         """,
     )
     assert not _has_placeholder(report)
@@ -180,3 +205,15 @@ def test_fake_testimonial_still_counts(tmp_path):
         "<blockquote>John Doe at Acme says this changed everything.</blockquote>",
     )
     assert _has_placeholder(report)
+
+
+def test_vite_active_project_fixture_keeps_visible_coming_soon_and_suppresses_internal_placeholder():
+    report = run_audit("tests/fixtures/active_project_vite_supabase_stripe")
+    placeholder_findings = [f for f in report.findings if f.id == "trust.placeholder_copy"]
+    evidence = {f.evidence for f in placeholder_findings}
+    files = {f.file for f in placeholder_findings}
+    assert any("Email login coming soon!" in item for item in evidence)
+    assert any("Email signup coming soon!" in item for item in evidence)
+    assert "components/RenderQueue/RenderQueuePanel.tsx" not in files
+    assert "contexts/RenderQueueContext.tsx" not in files
+

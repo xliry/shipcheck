@@ -22,7 +22,11 @@ def check(ctx: AuditContext) -> list[Finding]:
             out.append(finding("payments.test_key_production", "payments", "medium", "Stripe test key appears in production context", f, 1, "sk_test_...REDACTED", "Test keys in production break real payment flows.", "Separate test and live Stripe configuration by environment."))
         if is_stripe_related and "price_" in f.text and "process.env" not in f.text:
             out.append(finding("payments.hardcoded_price", "payments", "low", "Stripe price ID is hard-coded", f, 1, "price_...", "Hard-coded price IDs make environment separation fragile.", "Read price IDs from environment config."))
-        if is_stripe_related and "idempotency" not in low_text and any(word in low_text for word in ("checkout.session.completed", "invoice.paid", "customer.subscription")):
+        has_idempotency_evidence = any(
+            marker in low_text
+            for marker in ("idempotency", "stripe_payment_id", "processed_event", "processed_events", "event.id")
+        )
+        if is_stripe_related and not has_idempotency_evidence and any(word in low_text for word in ("checkout.session.completed", "invoice.paid", "customer.subscription")):
             out.append(finding("payments.no_idempotency", "payments", "medium", "Stripe event handling lacks idempotency evidence", f, 1, "event handler without idempotency keyword", "Stripe may retry events, causing duplicate grants or updates.", "Store processed event IDs or use idempotent writes."))
     if uses_checkout and not has_completed:
         out.append(finding("payments.no_checkout_completed", "payments", "high", "Stripe checkout exists without checkout.session.completed handling", evidence="checkout.sessions.create", why="Entitlements should be confirmed by webhook events.", fix="Handle checkout.session.completed in a verified webhook route."))

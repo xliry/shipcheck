@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from pathlib import Path
 import re
@@ -42,6 +43,13 @@ class SupabasePolicyContext:
     operation: str | None
     expression_kind: str
     table_class: str
+
+
+@dataclass(frozen=True)
+class AppContext:
+    stack: str
+    has_client_route_guard: bool = False
+    has_server_auth_evidence: bool = False
 
 
 def norm_path(path: str) -> str:
@@ -156,6 +164,76 @@ def line_has(text: str, *needles: str) -> bool:
     return any(n.lower() in low for n in needles)
 
 
+def _package_dependencies(ctx: AuditContext) -> set[str]:
+    deps: set[str] = set()
+    for source in ctx.by_name("package.json"):
+        try:
+            data = json.loads(source.text)
+        except json.JSONDecodeError:
+            continue
+        for section in ("dependencies", "devDependencies", "peerDependencies"):
+            values = data.get(section)
+            if isinstance(values, dict):
+                deps.update(str(name).lower() for name in values)
+    return deps
+
+
+def detect_app_context(ctx: AuditContext) -> AppContext:
+    deps = _package_dependencies(ctx)
+    paths = {norm_path(f.rel_path) for f in ctx.files}
+    names = {Path(path).name for path in paths}
+
+    has_next = (
+        "next" in deps
+        or any(name.startswith("next.config.") for name in names)
+        or any(path.startswith(("app/api/", "pages/api/")) for path in paths)
+    )
+    has_vite = (
+        "vite" in deps
+        or any(name in {"vite.config.ts", "vite.config.js", "vite.config.mts", "vite.config.mjs"} for name in names)
+        or "index.html" in paths
+        or any(path in {"src/main.tsx", "src/main.jsx", "index.tsx", "index.jsx"} for path in paths)
+    )
+    uses_react_router = "react-router-dom" in deps or any("react-router-dom" in f.text for f in ctx.files)
+
+    if has_next:
+        stack = "next"
+    elif has_vite and uses_react_router and "next" not in deps:
+        stack = "vite-react"
+    else:
+        stack = "unknown"
+
+    has_client_route_guard = any(
+        "ProtectedRoute" in f.text
+        or (
+            line_has(f.text, "useAuth", "Navigate to=", "router.push('/login", 'router.push("/login')
+            and not is_server_only_path(f.rel_path, f.text)
+        )
+        for f in code_files(ctx)
+    )
+    has_server_auth_evidence = any(
+        not is_stripe_webhook_route(f)
+        and (
+            is_api_route(f.rel_path)
+            or norm_path(f.rel_path).startswith(("api/", "server/", "cloudrun/src/routes/"))
+            or "/server/" in norm_path(f.rel_path)
+        )
+        and line_has(
+            f.text,
+            "supabase.auth.getUser",
+            "getUser(",
+            "getSession",
+            "Authorization",
+            "jwt",
+            "requireAuth",
+            "verifySession",
+            "getServerSession",
+        )
+        for f in code_files(ctx)
+    )
+    return AppContext(stack=stack, has_client_route_guard=has_client_route_guard, has_server_auth_evidence=has_server_auth_evidence)
+
+
 def is_client_path(path: str) -> bool:
     low = norm_path(path)
     return any(h in low for h in CLIENT_HINTS) and not any(h in low for h in ("app/api/", "pages/api/", "server/"))
@@ -169,7 +247,10 @@ def is_route_file(path: str) -> bool:
 
 def is_api_route(path: str) -> bool:
     low = norm_path(path)
-    return is_route_file(low) or ((low.startswith("pages/api/") or "/pages/api/" in low) and low.endswith(CODE_SUFFIXES))
+    return (
+        is_route_file(low)
+        or ((low.startswith("pages/api/") or "/pages/api/" in low) and low.endswith(CODE_SUFFIXES))
+    )
 
 
 def is_generated_file(path: str, text: str = "") -> bool:
@@ -232,9 +313,9 @@ def verifies_stripe_signature(text: str) -> bool:
 
 
 def is_stripe_webhook_route(source: SourceFile) -> bool:
-    if not is_api_route(source.rel_path):
-        return False
     low_path = norm_path(source.rel_path)
+    if not is_api_route(source.rel_path) and not (low_path.startswith("api/") and low_path.endswith(CODE_SUFFIXES)):
+        return False
     low_text = source.text.lower()
     has_stripe_context = "stripe" in low_path or "stripe" in low_text
     has_webhook_context = "webhook" in Path(low_path).parts or "webhook" in Path(low_path).name or "webhook" in low_text
