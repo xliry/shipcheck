@@ -3,13 +3,49 @@ from __future__ import annotations
 import re
 
 from shipcheck.models import AuditContext, Finding
-from .common import code_files, finding, is_api_route, is_stripe_webhook_route, line_has
+from .common import code_files, detect_app_context, finding, is_api_route, is_stripe_webhook_route, line_has
+
+
+def _error_boundary_finding_text(stack: str) -> tuple[str, str, str]:
+    if stack == "next":
+        return (
+            "No Next.js error boundary evidence found",
+            "User-facing failures should render controlled recovery UI.",
+            "Add app/error.tsx or an ErrorBoundary component.",
+        )
+    if stack == "vite-react":
+        return (
+            "No React error boundary evidence found",
+            "Single-page apps should render controlled recovery UI when screens fail.",
+            "Add a React ErrorBoundary around routed app surfaces or provider-heavy layouts.",
+        )
+    return (
+        "No error boundary evidence found",
+        "User-facing failures should render controlled recovery UI.",
+        "Add a framework-appropriate error boundary or controlled recovery UI.",
+    )
+
+
+def _has_error_boundary_evidence(ctx: AuditContext) -> bool:
+    return any(
+        "error.tsx" in f.rel_path
+        or "error.jsx" in f.rel_path
+        or "ErrorBoundary" in f.text
+        or "componentDidCatch" in f.text
+        or "getDerivedStateFromError" in f.text
+        or "react-error-boundary" in f.text
+        or ("createBrowserRouter" in f.text and "errorElement" in f.text)
+        or ("RouterProvider" in f.text and "errorElement" in f.text)
+        for f in ctx.files
+    )
 
 
 def check(ctx: AuditContext) -> list[Finding]:
     out: list[Finding] = []
-    if not any("error.tsx" in f.rel_path or "error.jsx" in f.rel_path or "ErrorBoundary" in f.text for f in ctx.files):
-        out.append(finding("reliability.no_error_boundary", "reliability", "low", "No Next.js error boundary evidence found", why="User-facing failures should render controlled recovery UI.", fix="Add app/error.tsx or an ErrorBoundary component."))
+    app = detect_app_context(ctx)
+    if not _has_error_boundary_evidence(ctx):
+        title, why, fix = _error_boundary_finding_text(app.stack)
+        out.append(finding("reliability.no_error_boundary", "reliability", "low", title, why=why, fix=fix))
     if not any(".github/workflows/" in f.rel_path for f in ctx.files):
         out.append(finding("reliability.no_ci", "reliability", "medium", "No CI workflow found", why="Critical flows need automated checks before launch.", fix="Add a GitHub Actions workflow for tests and linting."))
     has_tests = any(part in f.rel_path for f in ctx.files for part in ("test", "tests", "__tests__"))
